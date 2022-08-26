@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notesnotes_app/provider/auth_provider.dart';
+import 'package:notesnotes_app/provider/note_provider.dart';
 import 'package:notesnotes_app/screens/auth_screen.dart';
 import 'package:notesnotes_app/screens/note_list_screen.dart';
 import 'package:notesnotes_app/screens/splash_screen.dart';
@@ -19,6 +20,9 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(
             create: (context) => AuthProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => NoteProvider(),
           ),
         ],
         child: Consumer<AuthProvider>(

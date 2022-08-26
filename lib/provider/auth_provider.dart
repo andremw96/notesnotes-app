@@ -102,19 +102,14 @@ class AuthProvider with ChangeNotifier {
     return true;
   }
 
-  // void logout() async {
-  //   _token = null;
-  //   _userId = null;
-  //   _expiryDate = null;
-  //   if (_authTimer != null) {
-  //     _authTimer!.cancel();
-  //     _authTimer = null;
-  //   }
-  //   notifyListeners();
-  //   final prefs = await SharedPreferences.getInstance();
-  //   prefs.remove("userData");
-  //   prefs.clear();
-  // }
+  void logout() async {
+    _token = null;
+    _userId = null;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove("userData");
+    prefs.clear();
+  }
 
   // void _autoLogout() {
   //   if (_authTimer != null) {
