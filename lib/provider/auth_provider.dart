@@ -88,26 +88,19 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Future<bool> tryAutoLogin() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   if (!prefs.containsKey("userData")) {
-  //     return false;
-  //   }
-  //   final extractedUserData =
-  //       json.decode(prefs.getString("userData")!) as Map<String, dynamic>;
-  //   final expiryDate =
-  //       DateTime.parse(extractedUserData['expiryDate'] as String);
-  //   if (expiryDate.isBefore(DateTime.now())) {
-  //     return false;
-  //   }
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey("userData")) {
+      return false;
+    }
+    final extractedUserData =
+        json.decode(prefs.getString("userData")!) as Map<String, dynamic>;
 
-  //   _token = extractedUserData["token"] as String;
-  //   _userId = extractedUserData["userID"] as String;
-  //   _expiryDate = expiryDate;
-  //   notifyListeners();
-  //   _autoLogout();
-  //   return true;
-  // }
+    _token = extractedUserData["token"] as String;
+    _userId = extractedUserData["userID"] as String;
+    notifyListeners();
+    return true;
+  }
 
   // void logout() async {
   //   _token = null;
