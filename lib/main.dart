@@ -21,8 +21,11 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => AuthProvider(),
           ),
-          ChangeNotifierProvider(
-            create: (context) => NoteProvider(),
+          ChangeNotifierProxyProvider<AuthProvider, NoteProvider>(
+            update: (context, auth, previous) => NoteProvider(
+              auth.userId == null ? -1 : auth.userId!,
+            ),
+            create: (context) => NoteProvider(-1),
           ),
         ],
         child: Consumer<AuthProvider>(

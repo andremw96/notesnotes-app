@@ -46,6 +46,8 @@ class NoteItemWidget extends StatelessWidget {
                     fontSize: 18,
                     color: Colors.grey,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

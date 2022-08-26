@@ -1,30 +1,48 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:notesnotes_app/models/note.dart';
+import 'package:http/http.dart' as http;
+import '../models/config.dart';
+import '../models/http_exception.dart';
 
 class NoteProvider with ChangeNotifier {
-  List<NoteItem> _items = [
-    NoteItem(
-      id: "1",
-      title: "title",
-      description: "description",
-      updatedAt: DateTime.now(),
-      createdAt: DateTime.now(),
-    ),
-    NoteItem(
-      id: "2",
-      title: "titl2",
-      description: "description2",
-      updatedAt: DateTime.now(),
-      createdAt: DateTime.now(),
-    ),
-  ];
+  List<NoteItem> _items = [];
+
+  NoteProvider(this.userId);
 
   List<NoteItem> get items {
     return [..._items];
   }
 
+  final int userId;
+
   Future<void> fetchAndSetNotes() async {
-    await Future.value(_items);
-    notifyListeners();
+    final url = Uri.parse("$mainApiUrl/notes?user_id=$userId");
+    try {
+      final response = await http.get(
+        url,
+      );
+      List<NoteItem> loadedNotes = [];
+      final extractedData = json.decode(response.body) as List<dynamic>;
+      if (extractedData == null) {
+        return;
+      }
+      for (var value in extractedData) {
+        loadedNotes.add(
+          NoteItem(
+            id: value["id"],
+            title: value["title"],
+            description: value["description"]["String"],
+            updatedAt: DateTime.parse(value["updated_at"]),
+            createdAt: DateTime.parse(value["created_at"]),
+          ),
+        );
+      }
+      _items = loadedNotes.reversed.toList();
+      notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
   }
 }

@@ -9,7 +9,7 @@ import '../models/http_exception.dart';
 
 class AuthProvider with ChangeNotifier {
   String? _token;
-  String? _userId;
+  int? _userId;
   Timer? _authTimer;
 
   bool get isAuth {
@@ -23,7 +23,7 @@ class AuthProvider with ChangeNotifier {
     return null;
   }
 
-  String? get userId {
+  int? get userId {
     return _userId;
   }
 
@@ -73,7 +73,7 @@ class AuthProvider with ChangeNotifier {
         throw HttpException(responseData['error']);
       }
       _token = responseData['access_token'];
-      _userId = responseData['user']['username'];
+      _userId = responseData['user']['user_id'];
       notifyListeners();
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -97,7 +97,7 @@ class AuthProvider with ChangeNotifier {
         json.decode(prefs.getString("userData")!) as Map<String, dynamic>;
 
     _token = extractedUserData["token"] as String;
-    _userId = extractedUserData["userID"] as String;
+    _userId = extractedUserData["userID"] as int;
     notifyListeners();
     return true;
   }

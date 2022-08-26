@@ -66,14 +66,22 @@ class _NoteListScreenState extends State<NoteListScreen> {
             if (datasnapshot.error != null) {
               return const Center(child: Text("an error occured"));
             } else {
-              return Consumer<NoteProvider>(builder: (ctx, notes, child) {
-                return ListView.builder(
-                  itemCount: notes.items.length,
-                  itemBuilder: (context, i) => NoteItemWidget(
-                    noteItem: notes.items[i],
-                  ),
-                );
-              });
+              return Consumer<NoteProvider>(
+                builder: (ctx, notes, child) {
+                  return notes.items.length == 0
+                      ? const Center(
+                          child: Text(
+                            "add your new notes",
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: notes.items.length,
+                          itemBuilder: (context, i) => NoteItemWidget(
+                            noteItem: notes.items[i],
+                          ),
+                        );
+                },
+              );
             }
           }
         },
