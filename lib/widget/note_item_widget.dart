@@ -6,9 +6,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 import 'package:notesnotes_app/provider/note_provider.dart';
 import 'package:notesnotes_app/screens/add_edit_note_screen.dart';
+import 'package:notesnotes_app/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../models/note.dart';
+import '../provider/auth_provider.dart';
+import 'dialog_logout_widget.dart';
 
 class NoteItemWidget extends StatelessWidget {
   const NoteItemWidget({Key? key, required this.noteItem}) : super(key: key);
@@ -17,6 +20,7 @@ class NoteItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     return Dismissible(
       key: ValueKey(noteItem.id),
       background: Container(
@@ -34,10 +38,33 @@ class NoteItemWidget extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        Provider.of<NoteProvider>(context, listen: false).removeNote(
-          noteItem.id!,
-        );
+      onDismissed: (direction) async {
+        try {
+          await Provider.of<NoteProvider>(context, listen: false).removeNote(
+            noteItem.id!,
+          );
+        } catch (error) {
+          if (error.toString().contains("401")) {
+            scaffold.showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                action: SnackBarAction(
+                  label: "Relogin",
+                  onPressed: () async {
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .logout();
+                  },
+                ),
+              ),
+            );
+          } else {
+            scaffold.showSnackBar(
+              const SnackBar(
+                content: Text("deleting failed!"),
+              ),
+            );
+          }
+        }
       },
       confirmDismiss: (direction) {
         return showDialog(

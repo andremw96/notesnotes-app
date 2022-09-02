@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:notesnotes_app/provider/auth_provider.dart';
 import 'package:notesnotes_app/provider/note_provider.dart';
 import 'package:notesnotes_app/screens/add_edit_note_screen.dart';
+import 'package:notesnotes_app/widget/dialog_logout_widget.dart';
 import 'package:notesnotes_app/widget/note_item_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -24,8 +25,20 @@ class NoteListScreen extends StatefulWidget {
 
 class _NoteListScreenState extends State<NoteListScreen> {
   Future? _notesFuture;
-  Future _obtainNotesFuture() {
-    return Provider.of<NoteProvider>(context, listen: false).fetchAndSetNotes();
+  Future _obtainNotesFuture() async {
+    try {
+      return await Provider.of<NoteProvider>(context, listen: false)
+          .fetchAndSetNotes();
+    } catch (error) {
+      if (error.toString().contains("401")) {
+        await showDialog<Null>(
+          context: context,
+          builder: (ctx) => DialogLogoutWidget(
+            errorString: error.toString(),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -76,7 +89,11 @@ class _NoteListScreenState extends State<NoteListScreen> {
             return RefreshIndicator(
               onRefresh: _obtainNotesFuture,
               child: datasnapshot.error != null
-                  ? const Center(child: Text("an error occured"))
+                  ? Center(
+                      child: Text(
+                        "an error occured ${datasnapshot.error.toString()}",
+                      ),
+                    )
                   : Consumer<NoteProvider>(
                       builder: (ctx, notes, child) {
                         return notes.items.isEmpty

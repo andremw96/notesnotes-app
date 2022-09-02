@@ -25,9 +25,10 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProxyProvider<AuthProvider, NoteProvider>(
             update: (context, auth, previous) => NoteProvider(
               auth.userId == null ? -1 : auth.userId!,
+              auth.token == null ? "" : auth.token!,
               previous!.items == null ? [] : previous.items,
             ),
-            create: (context) => NoteProvider(-1, []),
+            create: (context) => NoteProvider(-1, "", []),
           ),
         ],
         child: Consumer<AuthProvider>(
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
                   ),
             routes: {
               AddEditNoteScreen.routeName: (ctx) => const AddEditNoteScreen(),
+              AuthScreen.routeName: (context) => AuthScreen(),
             },
           ),
         ));

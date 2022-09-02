@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notesnotes_app/models/note.dart';
 import 'package:notesnotes_app/provider/note_provider.dart';
+import 'package:notesnotes_app/widget/dialog_logout_widget.dart';
 import 'package:provider/provider.dart';
 
 class AddEditNoteScreen extends StatefulWidget {
@@ -65,23 +66,32 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           }
           Navigator.of(context).pop();
         } catch (error) {
-          await showDialog<Null>(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text("An error occured!"),
-              content: Text(
-                error.toString(),
+          if (error.toString().contains("401")) {
+            await showDialog(
+              context: context,
+              builder: (context) {
+                return DialogLogoutWidget(errorString: error.toString());
+              },
+            );
+          } else {
+            await showDialog<Null>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text("An error occured!"),
+                content: Text(
+                  error.toString(),
+                ),
+                actions: [
+                  FlatButton(
+                    child: const Text("Okay!"),
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                    },
+                  )
+                ],
               ),
-              actions: [
-                FlatButton(
-                  child: const Text("Okay!"),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                )
-              ],
-            ),
-          );
+            );
+          }
         }
 
         setState(() {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:notesnotes_app/models/note.dart';
 import 'package:http/http.dart' as http;
 import '../models/config.dart';
@@ -9,13 +10,29 @@ import '../models/http_exception.dart';
 class NoteProvider with ChangeNotifier {
   List<NoteItem> _items = [];
 
-  NoteProvider(this.userId, this._items);
+  NoteProvider(this.userId, this.token, this._items);
 
   List<NoteItem> get items {
     return [..._items];
   }
 
   final int userId;
+  final String token;
+
+  dynamic _interceptResponseData(Response response) {
+    final responseData = json.decode(response.body);
+    if (response.statusCode != 200) {
+      throw HttpException(response.statusCode, responseData['error']);
+    }
+
+    return responseData;
+  }
+
+  Map<String, String> _tokenHeader() {
+    return {
+      "Authorization": "Bearer $token",
+    };
+  }
 
   Future<void> insertNewNote(
     NoteItem noteItem,
@@ -33,10 +50,7 @@ class NoteProvider with ChangeNotifier {
         url,
         body: param,
       );
-      final responseData = json.decode(response.body);
-      if (responseData['error'] != null) {
-        throw HttpException(responseData['error']);
-      }
+      _interceptResponseData(response);
       await fetchAndSetNotes();
     } catch (error) {
       rethrow;
@@ -60,10 +74,7 @@ class NoteProvider with ChangeNotifier {
         url,
         body: param,
       );
-      final responseData = json.decode(response.body);
-      if (responseData['error'] != null) {
-        throw HttpException(responseData['error']);
-      }
+      _interceptResponseData(response);
       await fetchAndSetNotes();
     } catch (error) {
       rethrow;
@@ -84,11 +95,10 @@ class NoteProvider with ChangeNotifier {
       final response = await http.delete(
         url,
         body: param,
+        headers: _tokenHeader(),
       );
-      final responseData = json.decode(response.body);
-      if (responseData['error'] != null) {
-        throw HttpException(responseData['error']);
-      }
+      _interceptResponseData(response);
+
       await fetchAndSetNotes();
     } catch (error) {
       rethrow;
@@ -100,9 +110,11 @@ class NoteProvider with ChangeNotifier {
     try {
       final response = await http.get(
         url,
+        headers: _tokenHeader(),
       );
+      final responseData = _interceptResponseData(response);
       List<NoteItem> loadedNotes = [];
-      final extractedData = json.decode(response.body) as List<dynamic>;
+      final extractedData = responseData as List<dynamic>;
       if (extractedData == null) {
         return;
       }

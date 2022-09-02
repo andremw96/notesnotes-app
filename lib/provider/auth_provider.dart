@@ -47,7 +47,7 @@ class AuthProvider with ChangeNotifier {
       );
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        throw HttpException(responseData['error']);
+        throw HttpException(response.statusCode, responseData['error']);
       }
       await login(username, password);
     } catch (error) {
@@ -70,7 +70,7 @@ class AuthProvider with ChangeNotifier {
       );
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        throw HttpException(responseData['error']);
+        throw HttpException(response.statusCode, responseData['error']);
       }
       _token = responseData['access_token'];
       _userId = responseData['user']['user_id'];
@@ -102,7 +102,7 @@ class AuthProvider with ChangeNotifier {
     return true;
   }
 
-  void logout() async {
+  Future<void> logout() async {
     _token = null;
     _userId = null;
     notifyListeners();
