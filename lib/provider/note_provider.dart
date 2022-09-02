@@ -9,7 +9,7 @@ import '../models/http_exception.dart';
 class NoteProvider with ChangeNotifier {
   List<NoteItem> _items = [];
 
-  NoteProvider(this.userId);
+  NoteProvider(this.userId, this._items);
 
   List<NoteItem> get items {
     return [..._items];

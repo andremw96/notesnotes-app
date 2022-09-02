@@ -20,13 +20,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(
-            create: (context) => AuthProvider(),
+            create: (_) => AuthProvider(),
           ),
           ChangeNotifierProxyProvider<AuthProvider, NoteProvider>(
             update: (context, auth, previous) => NoteProvider(
               auth.userId == null ? -1 : auth.userId!,
+              previous!.items == null ? [] : previous.items,
             ),
-            create: (context) => NoteProvider(-1),
+            create: (context) => NoteProvider(-1, []),
           ),
         ],
         child: Consumer<AuthProvider>(
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
               primarySwatch: Colors.blue,
             ),
             home: auth.isAuth
-                ? NoteListScreen()
+                ? const NoteListScreen()
                 : FutureBuilder(
                     future: auth.tryAutoLogin(),
                     builder: (ctx, authResultSnapshot) =>

@@ -23,7 +23,7 @@ class NoteListScreen extends StatefulWidget {
 }
 
 class _NoteListScreenState extends State<NoteListScreen> {
-  Future<void>? _notesFuture = null;
+  Future? _notesFuture;
   Future _obtainNotesFuture() {
     return Provider.of<NoteProvider>(context, listen: false).fetchAndSetNotes();
   }

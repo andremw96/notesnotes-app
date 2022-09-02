@@ -32,8 +32,9 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
   @override
   void didChangeDependencies() {
     if (_isEdit) {
-      final note = ModalRoute.of(context)!.settings.arguments as NoteItem;
+      final note = ModalRoute.of(context)?.settings.arguments;
       if (note != null) {
+        note as NoteItem;
         _initValues = {
           'title': note.title,
           'description': note.description,
