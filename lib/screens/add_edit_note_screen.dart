@@ -15,11 +15,12 @@ class AddEditNoteScreen extends StatefulWidget {
 class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
   final _form = GlobalKey<FormState>();
   final _descriptionFocusNode = FocusNode();
-  final _initValues = {
+  var _initValues = {
     'title': '',
     'description': '',
   };
   var _isLoading = false;
+  var _isEdit = true;
   var _note = NoteItem(
     id: null,
     title: "title",
@@ -27,6 +28,22 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     updatedAt: DateTime.now(),
     createdAt: DateTime.now(),
   );
+
+  @override
+  void didChangeDependencies() {
+    if (_isEdit) {
+      final note = ModalRoute.of(context)!.settings.arguments as NoteItem;
+      if (note != null) {
+        _initValues = {
+          'title': note.title,
+          'description': note.description,
+        };
+        _note = note;
+      }
+    }
+    _isEdit = false;
+    super.didChangeDependencies();
+  }
 
   Future<void> _saveForm() async {
     if (_form.currentState != null) {
@@ -38,8 +55,13 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
         });
 
         try {
-          await Provider.of<NoteProvider>(context, listen: false)
-              .insertNewNote(_note);
+          if (_note.id != null) {
+            await Provider.of<NoteProvider>(context, listen: false)
+                .updateNote(_note);
+          } else {
+            await Provider.of<NoteProvider>(context, listen: false)
+                .insertNewNote(_note);
+          }
           Navigator.of(context).pop();
         } catch (error) {
           await showDialog<Null>(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
+import 'package:notesnotes_app/screens/add_edit_note_screen.dart';
 
 import '../models/note.dart';
 
@@ -19,6 +20,12 @@ class NoteItemWidget extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
+            onTap: () => {
+              Navigator.of(context).pushNamed(
+                AddEditNoteScreen.routeName,
+                arguments: noteItem,
+              )
+            },
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
