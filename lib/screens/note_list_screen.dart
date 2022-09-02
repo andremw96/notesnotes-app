@@ -5,6 +5,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:notesnotes_app/provider/auth_provider.dart';
 import 'package:notesnotes_app/provider/note_provider.dart';
+import 'package:notesnotes_app/screens/add_edit_note_screen.dart';
 import 'package:notesnotes_app/widget/note_item_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -55,6 +56,15 @@ class _NoteListScreenState extends State<NoteListScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: IconButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(AddEditNoteScreen.routeName);
+          },
+          icon: const Icon(Icons.add),
+        ),
+        onPressed: () => {},
+      ),
       body: FutureBuilder(
         future: _notesFuture,
         builder: (ctx, datasnapshot) {
@@ -68,7 +78,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
             } else {
               return Consumer<NoteProvider>(
                 builder: (ctx, notes, child) {
-                  return notes.items.length == 0
+                  return notes.items.isEmpty
                       ? const Center(
                           child: Text(
                             "add your new notes",

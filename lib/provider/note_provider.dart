@@ -17,6 +17,32 @@ class NoteProvider with ChangeNotifier {
 
   final int userId;
 
+  Future<void> insertNewNote(
+    NoteItem noteItem,
+  ) async {
+    final url = Uri.parse("$mainApiUrl/insertnote");
+    final param = json.encode(
+      {
+        "user_id": userId,
+        "title": noteItem.title,
+        "description": noteItem.description,
+      },
+    );
+    try {
+      final response = await http.post(
+        url,
+        body: param,
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']);
+      }
+      await fetchAndSetNotes();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<void> fetchAndSetNotes() async {
     final url = Uri.parse("$mainApiUrl/notes?user_id=$userId");
     try {

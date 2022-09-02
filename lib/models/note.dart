@@ -1,5 +1,7 @@
-class NoteItem {
-  final int id;
+import 'package:flutter/material.dart';
+
+class NoteItem with ChangeNotifier {
+  final int? id;
   final String title;
   final String description;
   final DateTime updatedAt;
