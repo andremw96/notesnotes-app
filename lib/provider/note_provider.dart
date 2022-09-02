@@ -70,6 +70,31 @@ class NoteProvider with ChangeNotifier {
     }
   }
 
+  Future<void> removeNote(
+    int noteId,
+  ) async {
+    final url = Uri.parse("$mainApiUrl/deletenote");
+    final param = json.encode(
+      {
+        "user_id": userId,
+        "note_id": noteId,
+      },
+    );
+    try {
+      final response = await http.delete(
+        url,
+        body: param,
+      );
+      final responseData = json.decode(response.body);
+      if (responseData['error'] != null) {
+        throw HttpException(responseData['error']);
+      }
+      await fetchAndSetNotes();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   Future<void> fetchAndSetNotes() async {
     final url = Uri.parse("$mainApiUrl/notes?user_id=$userId");
     try {
