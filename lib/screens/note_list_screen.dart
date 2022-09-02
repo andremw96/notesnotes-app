@@ -73,26 +73,27 @@ class _NoteListScreenState extends State<NoteListScreen> {
               child: CircularProgressIndicator(),
             );
           } else {
-            if (datasnapshot.error != null) {
-              return const Center(child: Text("an error occured"));
-            } else {
-              return Consumer<NoteProvider>(
-                builder: (ctx, notes, child) {
-                  return notes.items.isEmpty
-                      ? const Center(
-                          child: Text(
-                            "add your new notes",
-                          ),
-                        )
-                      : ListView.builder(
-                          itemCount: notes.items.length,
-                          itemBuilder: (context, i) => NoteItemWidget(
-                            noteItem: notes.items[i],
-                          ),
-                        );
-                },
-              );
-            }
+            return RefreshIndicator(
+              onRefresh: _obtainNotesFuture,
+              child: datasnapshot.error != null
+                  ? const Center(child: Text("an error occured"))
+                  : Consumer<NoteProvider>(
+                      builder: (ctx, notes, child) {
+                        return notes.items.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  "add your new notes",
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: notes.items.length,
+                                itemBuilder: (context, i) => NoteItemWidget(
+                                  noteItem: notes.items[i],
+                                ),
+                              );
+                      },
+                    ),
+            );
           }
         },
       ),
