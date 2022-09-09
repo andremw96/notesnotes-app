@@ -49,6 +49,7 @@ class NoteProvider with ChangeNotifier {
       final response = await http.post(
         url,
         body: param,
+        headers: _tokenHeader(),
       );
       _interceptResponseData(response);
       await fetchAndSetNotes();
@@ -73,6 +74,7 @@ class NoteProvider with ChangeNotifier {
       final response = await http.post(
         url,
         body: param,
+        headers: _tokenHeader(),
       );
       _interceptResponseData(response);
       await fetchAndSetNotes();
@@ -101,6 +103,7 @@ class NoteProvider with ChangeNotifier {
 
       await fetchAndSetNotes();
     } catch (error) {
+      await fetchAndSetNotes();
       rethrow;
     }
   }

@@ -22,7 +22,7 @@ class NoteItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final scaffold = ScaffoldMessenger.of(context);
     return Dismissible(
-      key: ValueKey(noteItem.id),
+      key: UniqueKey(),
       background: Container(
         color: Theme.of(context).errorColor,
         alignment: Alignment.centerRight,

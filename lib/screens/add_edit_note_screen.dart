@@ -4,6 +4,8 @@ import 'package:notesnotes_app/provider/note_provider.dart';
 import 'package:notesnotes_app/widget/dialog_logout_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../provider/auth_provider.dart';
+
 class AddEditNoteScreen extends StatefulWidget {
   static const routeName = "/add-edit-note";
 
@@ -47,7 +49,7 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
     super.didChangeDependencies();
   }
 
-  Future<void> _saveForm() async {
+  Future<void> _saveForm(ScaffoldMessengerState scaffold) async {
     if (_form.currentState != null) {
       final isValid = _form.currentState?.validate();
       if (isValid!) {
@@ -67,11 +69,18 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
           Navigator.of(context).pop();
         } catch (error) {
           if (error.toString().contains("401")) {
-            await showDialog(
-              context: context,
-              builder: (context) {
-                return DialogLogoutWidget(errorString: error.toString());
-              },
+            scaffold.showSnackBar(
+              SnackBar(
+                content: Text(error.toString()),
+                action: SnackBarAction(
+                  label: "Relogin",
+                  onPressed: () async {
+                    await Provider.of<AuthProvider>(context, listen: false)
+                        .logout();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
             );
           } else {
             await showDialog<Null>(
@@ -103,12 +112,13 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Product"),
         actions: [
           IconButton(
-            onPressed: _saveForm,
+            onPressed: () => _saveForm(scaffold),
             icon: const Icon(Icons.save),
           ),
         ],
