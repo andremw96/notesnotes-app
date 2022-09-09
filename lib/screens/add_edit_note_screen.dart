@@ -164,14 +164,14 @@ class _AddEditNoteScreenState extends State<AddEditNoteScreen> {
                       decoration: const InputDecoration(
                         label: Text('Description'),
                       ),
-                      maxLines: 10,
                       keyboardType: TextInputType.multiline,
                       focusNode: _descriptionFocusNode,
+                      maxLines: null,
                       onSaved: (value) {
                         _note = NoteItem(
                           id: _note.id,
                           title: _note.title,
-                          description: value!,
+                          description: value!.trim(),
                           createdAt: _note.createdAt,
                           updatedAt: _note.updatedAt,
                         );
